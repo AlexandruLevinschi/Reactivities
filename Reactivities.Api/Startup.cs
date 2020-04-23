@@ -23,6 +23,14 @@ namespace Reactivities.Api
                 options.UseSqlServer(Configuration.GetConnectionString("ReactivitiesDatabase")));
 
             services.AddControllers();
+
+            services.AddCors(options =>
+            {
+                options.AddPolicy("CorsPolicy", policy =>
+                {
+                    policy.AllowAnyHeader().AllowAnyMethod().WithOrigins(Configuration["AppSettings.ClientAppUrl"]);
+                });
+            });
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -31,6 +39,8 @@ namespace Reactivities.Api
             {
                 app.UseDeveloperExceptionPage();
             }
+
+            app.UseCors("CorsPolicy");
 
             app.UseRouting();
 
