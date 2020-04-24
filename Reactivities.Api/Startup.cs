@@ -28,7 +28,7 @@ namespace Reactivities.Api
             {
                 options.AddPolicy("CorsPolicy", policy =>
                 {
-                    policy.AllowAnyHeader().AllowAnyMethod().WithOrigins(Configuration["AppSettings.ClientAppUrl"]);
+                    policy.AllowAnyHeader().AllowAnyMethod().WithOrigins(Configuration["AppSettings:ClientAppUrl"]);
                 });
             });
         }

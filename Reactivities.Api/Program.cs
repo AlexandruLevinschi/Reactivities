@@ -22,6 +22,7 @@ namespace Reactivities.Api
                 {
                     var context = services.GetRequiredService<ReactivitiesDbContext>();
                     context.Database.Migrate();
+                    Seed.SeedData(context);
                 }
                 catch (Exception e)
                 {
