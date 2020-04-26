@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Reactivities.Domain.Entities;
 using Reactivities.Persistence;
 
-namespace Reactivities.Application.EntityServices.Activities
+namespace Reactivities.Application.EntityServices.Activities.Queries
 {
     public class GetActivitiesQuery : IRequest<List<Activity>>
     {
