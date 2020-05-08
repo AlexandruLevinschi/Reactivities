@@ -19,16 +19,8 @@ const App: React.FC<RouteComponentProps> = ({ location }) => {
             <NavBar />
             <Container className="main-container">
               <Route exact path="/activities" component={ActivityDashboard} />
-              <Route
-                exact
-                path="/activities/details/:id"
-                component={ActivityDetails}
-              />
-              <Route
-                key={location.key}
-                path={["/activities/create", "/activities/edit/:id"]}
-                component={ActivityForm}
-              />
+              <Route exact path="/activities/details/:id" component={ActivityDetails} />
+              <Route key={location.key} path={["/activities/create", "/activities/edit/:id"]} component={ActivityForm} />
             </Container>
           </Fragment>
         )}
