@@ -1,3 +1,4 @@
+using FluentValidation.AspNetCore;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -5,6 +6,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Reactivities.Api.Middleware;
+using Reactivities.Application.EntityServices.Activities.Commands;
 using Reactivities.Application.EntityServices.Activities.Queries;
 using Reactivities.Persistence;
 
@@ -24,7 +27,11 @@ namespace Reactivities.Api
             services.AddDbContext<ReactivitiesDbContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("ReactivitiesDatabase")));
 
-            services.AddControllers();
+            services.AddControllers()
+                .AddFluentValidation(config =>
+                {
+                    config.RegisterValidatorsFromAssemblyContaining<CreateActivityCommand>();
+                });
 
             services.AddMediatR(typeof(GetActivitiesQuery).Assembly);
 
@@ -39,10 +46,12 @@ namespace Reactivities.Api
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-            }
+            app.UseMiddleware<ErrorHandlingMiddleware>();
+
+            //if (env.IsDevelopment())
+            //{
+            //    app.UseDeveloperExceptionPage();
+            //}
 
             app.UseCors("CorsPolicy");
 

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using FluentValidation;
 using MediatR;
 using Reactivities.Domain.Entities;
 using Reactivities.Persistence;
@@ -53,6 +54,25 @@ namespace Reactivities.Application.EntityServices.Activities.Commands
             if (success) return Unit.Value;
 
             throw new Exception("Error during save changes.");
+        }
+    }
+
+    public class CreateActivityCommandValidator : AbstractValidator<CreateActivityCommand>
+    {
+        public CreateActivityCommandValidator()
+        {
+
+            RuleFor(a => a.Name).NotEmpty();
+
+            RuleFor(a => a.Description).NotEmpty();
+
+            RuleFor(a => a.Category).NotEmpty();
+
+            RuleFor(a => a.Date).NotEmpty();
+
+            RuleFor(a => a.City).NotEmpty();
+
+            RuleFor(a => a.Venue).NotEmpty();
         }
     }
 }

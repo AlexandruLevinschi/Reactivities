@@ -1,7 +1,10 @@
 ﻿using System;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
+using FluentValidation;
 using MediatR;
+using Reactivities.Application.Exceptions;
 using Reactivities.Persistence;
 
 namespace Reactivities.Application.EntityServices.Activities.Commands
@@ -24,7 +27,7 @@ namespace Reactivities.Application.EntityServices.Activities.Commands
         {
             var activity = await _context.Activities.FindAsync(request.Id);
 
-            if (activity == null) throw new Exception("Could not find activity");
+            if (activity == null) throw new RestException(HttpStatusCode.NotFound, "Could not find activity.");
 
             _context.Remove(activity);
 
@@ -33,6 +36,14 @@ namespace Reactivities.Application.EntityServices.Activities.Commands
             if (success) return Unit.Value;
 
             throw new Exception("Error during save changes.");
+        }
+    }
+
+    public class DeleteActivityCommandValidator : AbstractValidator<DeleteActivityCommand>
+    {
+        public DeleteActivityCommandValidator()
+        {
+            RuleFor(a => a.Id).NotEmpty();
         }
     }
 }
