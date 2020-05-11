@@ -1,14 +1,22 @@
+using System.Text;
 using FluentValidation.AspNetCore;
 using MediatR;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
+using Microsoft.IdentityModel.Tokens;
 using Reactivities.Api.Middleware;
 using Reactivities.Application.EntityServices.Activities.Commands;
 using Reactivities.Application.EntityServices.Activities.Queries;
+using Reactivities.Application.Interfaces;
+using Reactivities.Domain.Entities;
+using Reactivities.Infrastructure.Security;
 using Reactivities.Persistence;
 
 namespace Reactivities.Api
@@ -27,11 +35,15 @@ namespace Reactivities.Api
             services.AddDbContext<ReactivitiesDbContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("ReactivitiesDatabase")));
 
-            services.AddControllers()
-                .AddFluentValidation(config =>
-                {
-                    config.RegisterValidatorsFromAssemblyContaining<CreateActivityCommand>();
-                });
+            services.AddControllers(options =>
+            {
+                var policy = new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build();
+                options.Filters.Add(new AuthorizeFilter(policy));
+            })
+            .AddFluentValidation(config =>
+            {
+                config.RegisterValidatorsFromAssemblyContaining<CreateActivityCommand>();
+            });
 
             services.AddMediatR(typeof(GetActivitiesQuery).Assembly);
 
@@ -42,6 +54,27 @@ namespace Reactivities.Api
                     policy.AllowAnyHeader().AllowAnyMethod().WithOrigins(Configuration["AppSettings:ClientAppUrl"]);
                 });
             });
+
+            var builder = services.AddIdentityCore<User>();
+            var identityBuilder = new IdentityBuilder(builder.UserType, builder.Services);
+            identityBuilder.AddEntityFrameworkStores<ReactivitiesDbContext>();
+            identityBuilder.AddSignInManager<SignInManager<User>>();
+
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["TokenKey"]));
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(options =>
+                {
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuerSigningKey = true,
+                        IssuerSigningKey = key,
+                        ValidateAudience = false,
+                        ValidateIssuer = false
+                    };
+                });
+
+            services.AddScoped<IJwtGenerator, JwtGenerator>();
+            services.AddScoped<IUserAccessor, UserAccessor>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -53,10 +86,10 @@ namespace Reactivities.Api
             //    app.UseDeveloperExceptionPage();
             //}
 
+            app.UseRouting();
             app.UseCors("CorsPolicy");
 
-            app.UseRouting();
-
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>

@@ -1,27 +1,18 @@
 ﻿using System;
 using System.Threading.Tasks;
-using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Reactivities.Application.EntityServices.Activities.Commands;
 using Reactivities.Application.EntityServices.Activities.Queries;
 
 namespace Reactivities.Api.Controllers
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class ActivitiesController : ControllerBase
+    public class ActivitiesController : BaseController
     {
-        private readonly IMediator _mediator;
-
-        public ActivitiesController(IMediator mediator)
-        {
-            _mediator = mediator;
-        }
-
         [HttpGet]
         public async Task<IActionResult> List()
         {
-            var request = await _mediator.Send(new GetActivitiesQuery());
+            var request = await Mediator.Send(new GetActivitiesQuery());
 
             if (request != null) return Ok(request);
 
@@ -31,7 +22,7 @@ namespace Reactivities.Api.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> Details(Guid id)
         {
-            var request = await _mediator.Send(new GetActivityDetailsQuery {Id = id});
+            var request = await Mediator.Send(new GetActivityDetailsQuery {Id = id});
 
             if (request != null) return Ok(request);
 
@@ -41,7 +32,7 @@ namespace Reactivities.Api.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(CreateActivityCommand command)
         {
-            var request = await _mediator.Send(command);
+            var request = await Mediator.Send(command);
 
             return Ok();
         }
@@ -50,7 +41,7 @@ namespace Reactivities.Api.Controllers
         public async Task<IActionResult> Update(Guid id, UpdateActivityCommand command)
         {
             command.Id = id;
-            var request = await _mediator.Send(command);
+            var request = await Mediator.Send(command);
 
             return Ok();
         }
@@ -58,7 +49,7 @@ namespace Reactivities.Api.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
-            var request = await _mediator.Send(new DeleteActivityCommand {Id = id});
+            var request = await Mediator.Send(new DeleteActivityCommand {Id = id});
 
             return Ok();
         }
