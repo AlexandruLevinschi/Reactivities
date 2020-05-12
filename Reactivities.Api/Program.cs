@@ -1,9 +1,11 @@
 using System;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Reactivities.Domain.Entities;
 using Reactivities.Persistence;
 
 namespace Reactivities.Api
@@ -21,8 +23,9 @@ namespace Reactivities.Api
                 try
                 {
                     var context = services.GetRequiredService<ReactivitiesDbContext>();
+                    var userManager = services.GetRequiredService<UserManager<User>>();
                     context.Database.Migrate();
-                    Seed.SeedData(context);
+                    Seed.SeedData(context, userManager).Wait();
                 }
                 catch (Exception e)
                 {
