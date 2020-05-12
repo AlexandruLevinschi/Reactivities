@@ -77,7 +77,7 @@ namespace Reactivities.Application.EntityServices.Users.Commands
 
             RuleFor(request => request.Username).NotEmpty();
 
-            RuleFor(request => request.Email).EmailAddress();
+            RuleFor(request => request.Email).NotEmpty().EmailAddress();
 
             RuleFor(request => request.Password).Password();
         }
