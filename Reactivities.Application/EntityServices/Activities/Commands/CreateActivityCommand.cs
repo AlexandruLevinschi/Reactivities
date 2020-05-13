@@ -3,6 +3,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using FluentValidation;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
+using Reactivities.Application.Interfaces;
 using Reactivities.Domain.Entities;
 using Reactivities.Persistence;
 
@@ -28,10 +30,12 @@ namespace Reactivities.Application.EntityServices.Activities.Commands
     public class CreateActivityCommandHandler : IRequestHandler<CreateActivityCommand>
     {
         private readonly ReactivitiesDbContext _context;
+        private readonly IUserAccessor _userAccessor;
 
-        public CreateActivityCommandHandler(ReactivitiesDbContext context)
+        public CreateActivityCommandHandler(ReactivitiesDbContext context, IUserAccessor userAccessor)
         {
             _context = context;
+            _userAccessor = userAccessor;
         }
 
         public async Task<Unit> Handle(CreateActivityCommand request, CancellationToken cancellationToken)
@@ -48,6 +52,17 @@ namespace Reactivities.Application.EntityServices.Activities.Commands
             };
 
             _context.Activities.Add(activity);
+
+            var user = await _context.Users.SingleOrDefaultAsync(u => u.UserName == _userAccessor.GetCurrentUsername(), cancellationToken);
+            var attendee = new UserActivity
+            {
+                User = user,
+                Activity = activity,
+                IsHost = true,
+                DateJoined = DateTime.Now
+            };
+
+            _context.UserActivities.Add(attendee);
 
             var success = await _context.SaveChangesAsync(cancellationToken) > 0;
 

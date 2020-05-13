@@ -1,4 +1,5 @@
 using System.Text;
+using AutoMapper;
 using FluentValidation.AspNetCore;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -33,7 +34,10 @@ namespace Reactivities.Api
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<ReactivitiesDbContext>(options =>
-                options.UseSqlServer(Configuration.GetConnectionString("ReactivitiesDatabase")));
+            {
+                options.UseLazyLoadingProxies();
+                options.UseSqlServer(Configuration.GetConnectionString("ReactivitiesDatabase"));
+            });
 
             services.AddControllers(options =>
             {
@@ -46,6 +50,7 @@ namespace Reactivities.Api
             });
 
             services.AddMediatR(typeof(GetActivitiesQuery).Assembly);
+            services.AddAutoMapper(typeof(GetActivitiesQuery));
 
             services.AddCors(options =>
             {
@@ -59,6 +64,13 @@ namespace Reactivities.Api
             var identityBuilder = new IdentityBuilder(builder.UserType, builder.Services);
             identityBuilder.AddEntityFrameworkStores<ReactivitiesDbContext>();
             identityBuilder.AddSignInManager<SignInManager<User>>();
+
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("IsActivityHost",
+                    policy => { policy.Requirements.Add(new IsHostRequirement()); });
+            });
+            services.AddTransient<IAuthorizationHandler, IsHostRequirementHandler>();
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["TokenKey"]));
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)

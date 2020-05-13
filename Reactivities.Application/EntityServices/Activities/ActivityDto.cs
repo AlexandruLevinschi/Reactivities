@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using Newtonsoft.Json;
 
-namespace Reactivities.Domain.Entities
+namespace Reactivities.Application.EntityServices.Activities
 {
-    public class Activity
+    public class ActivityDto
     {
         public Guid Id { get; set; }
 
@@ -19,6 +20,7 @@ namespace Reactivities.Domain.Entities
 
         public string Venue { get; set; }
 
-        public virtual ICollection<UserActivity> UserActivities { get; set; }
+        [JsonProperty("attendees")]
+        public ICollection<AttendeeDto> UserActivities { get; set; }
     }
 }
