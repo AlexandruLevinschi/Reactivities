@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Reactivities.Application.EntityServices.Activities.Commands;
@@ -38,6 +39,7 @@ namespace Reactivities.Api.Controllers
         }
 
         [HttpPost("{id}")]
+        [Authorize(Policy = "IsActivityHost")]
         public async Task<IActionResult> Update(Guid id, UpdateActivityCommand command)
         {
             command.Id = id;
@@ -47,9 +49,24 @@ namespace Reactivities.Api.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Policy = "IsActivityHost")]
         public async Task<IActionResult> Delete(Guid id)
         {
             var request = await Mediator.Send(new DeleteActivityCommand {Id = id});
+
+            return Ok();
+        }
+
+        [HttpPost("attend/{id}")]
+        public async Task<ActionResult<Unit>> Attend(Guid id)
+        {
+            return await Mediator.Send(new AttendActivityCommand {Id = id});
+        }
+
+        [HttpDelete("deleteAttendance/{id}")]
+        public async Task<IActionResult> Unattend(Guid id)
+        {
+            var request = await Mediator.Send(new UnattendActivityCommand {Id = id});
 
             return Ok();
         }
