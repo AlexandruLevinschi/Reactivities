@@ -20,7 +20,6 @@ namespace Reactivities.Application.EntityServices.Activities
 
         public string Venue { get; set; }
 
-        [JsonProperty("attendees")]
-        public ICollection<AttendeeDto> UserActivities { get; set; }
+        public ICollection<AttendeeDto> Attendees { get; set; }
     }
 }
