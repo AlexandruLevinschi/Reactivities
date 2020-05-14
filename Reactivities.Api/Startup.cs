@@ -17,6 +17,7 @@ using Reactivities.Application.EntityServices.Activities.Commands;
 using Reactivities.Application.EntityServices.Activities.Queries;
 using Reactivities.Application.Interfaces;
 using Reactivities.Domain.Entities;
+using Reactivities.Infrastructure.Photos;
 using Reactivities.Infrastructure.Security;
 using Reactivities.Persistence;
 
@@ -87,16 +88,13 @@ namespace Reactivities.Api
 
             services.AddScoped<IJwtGenerator, JwtGenerator>();
             services.AddScoped<IUserAccessor, UserAccessor>();
+            services.AddScoped<IPhotoAccessor, PhotoAccessor>();
+            services.Configure<CloudinarySettings>(Configuration.GetSection("Cloudinary"));
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             app.UseMiddleware<ErrorHandlingMiddleware>();
-
-            //if (env.IsDevelopment())
-            //{
-            //    app.UseDeveloperExceptionPage();
-            //}
 
             app.UseRouting();
             app.UseCors("CorsPolicy");

@@ -26,7 +26,6 @@ namespace Reactivities.Infrastructure.Security
                 new Claim(JwtRegisteredClaimNames.NameId, user.UserName)
             };
 
-            // Generate signing credentials
             var credentials = new SigningCredentials(_key, SecurityAlgorithms.HmacSha512Signature);
 
             var tokenDescriptor = new SecurityTokenDescriptor

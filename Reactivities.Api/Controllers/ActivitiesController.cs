@@ -31,30 +31,24 @@ namespace Reactivities.Api.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(CreateActivityCommand command)
+        public async Task<ActionResult<Unit>> Create(CreateActivityCommand command)
         {
-            var request = await Mediator.Send(command);
-
-            return Ok();
+            return await Mediator.Send(command);
         }
 
         [HttpPost("{id}")]
         [Authorize(Policy = "IsActivityHost")]
-        public async Task<IActionResult> Update(Guid id, UpdateActivityCommand command)
+        public async Task<ActionResult<Unit>> Update(Guid id, UpdateActivityCommand command)
         {
             command.Id = id;
-            var request = await Mediator.Send(command);
-
-            return Ok();
+            return await Mediator.Send(command);
         }
 
         [HttpDelete("{id}")]
         [Authorize(Policy = "IsActivityHost")]
-        public async Task<IActionResult> Delete(Guid id)
+        public async Task<ActionResult<Unit>> Delete(Guid id)
         {
-            var request = await Mediator.Send(new DeleteActivityCommand {Id = id});
-
-            return Ok();
+            return await Mediator.Send(new DeleteActivityCommand {Id = id});
         }
 
         [HttpPost("attend/{id}")]
@@ -64,11 +58,9 @@ namespace Reactivities.Api.Controllers
         }
 
         [HttpDelete("deleteAttendance/{id}")]
-        public async Task<IActionResult> Unattend(Guid id)
+        public async Task<ActionResult<Unit>> Unattend(Guid id)
         {
-            var request = await Mediator.Send(new UnattendActivityCommand {Id = id});
-
-            return Ok();
+            return await Mediator.Send(new UnattendActivityCommand {Id = id});
         }
     }
 }
