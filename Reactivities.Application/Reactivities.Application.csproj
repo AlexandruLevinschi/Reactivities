@@ -16,4 +16,8 @@
     <ProjectReference Include="..\Reactivities.Persistence\Reactivities.Persistence.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Photos\" />
+  </ItemGroup>
+
 </Project>

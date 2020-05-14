@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System.Linq;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentValidation;
@@ -40,13 +41,12 @@ namespace Reactivities.Application.EntityServices.Users.Queries
 
             if (result.Succeeded)
             {
-                // TODO: Generate token
                 return new UserModel
                 {
                     DisplayName = user.DisplayName,
                     Token = _jwtGenerator.CreateToken(user),
                     Username = user.UserName,
-                    Image = null
+                    Image = user.Photos.FirstOrDefault(p => p.IsMain)?.Url
                 };
             }
 
