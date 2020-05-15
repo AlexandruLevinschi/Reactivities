@@ -20,5 +20,7 @@ namespace Reactivities.Domain.Entities
         public string Venue { get; set; }
 
         public virtual ICollection<UserActivity> UserActivities { get; set; }
+
+        public virtual ICollection<Comment> Comments { get; set; }
     }
 }

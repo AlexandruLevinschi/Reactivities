@@ -1,4 +1,5 @@
 using System.Text;
+using System.Threading.Tasks;
 using AutoMapper;
 using FluentValidation.AspNetCore;
 using MediatR;
@@ -13,6 +14,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Reactivities.Api.Middleware;
+using Reactivities.Api.SignalR;
 using Reactivities.Application.EntityServices.Activities.Commands;
 using Reactivities.Application.EntityServices.Activities.Queries;
 using Reactivities.Application.Interfaces;
@@ -52,12 +54,13 @@ namespace Reactivities.Api
 
             services.AddMediatR(typeof(GetActivitiesQuery).Assembly);
             services.AddAutoMapper(typeof(GetActivitiesQuery));
+            services.AddSignalR();
 
             services.AddCors(options =>
             {
                 options.AddPolicy("CorsPolicy", policy =>
                 {
-                    policy.AllowAnyHeader().AllowAnyMethod().WithOrigins(Configuration["AppSettings:ClientAppUrl"]);
+                    policy.AllowAnyHeader().AllowAnyMethod().WithOrigins(Configuration["AppSettings:ClientAppUrl"]).AllowCredentials();
                 });
             });
 
@@ -84,6 +87,23 @@ namespace Reactivities.Api
                         ValidateAudience = false,
                         ValidateIssuer = false
                     };
+
+                    options.Events = new JwtBearerEvents
+                    {
+                        OnMessageReceived = context =>
+                        {
+                            var accessToken = context.Request.Query["access_token"];
+                            var path = context.HttpContext.Request.Path;
+
+                            if (!string.IsNullOrEmpty(accessToken) 
+                                && path.StartsWithSegments("/chat"))
+                            {
+                                context.Token = accessToken;
+                            }
+
+                            return Task.CompletedTask;
+                        }
+                    };
                 });
 
             services.AddScoped<IJwtGenerator, JwtGenerator>();
@@ -105,6 +125,7 @@ namespace Reactivities.Api
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                endpoints.MapHub<ChatHub>("/chat");
             });
         }
     }
