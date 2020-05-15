@@ -6,6 +6,11 @@ import { history } from "../..";
 import { toast } from "react-toastify";
 import { RootStore } from "./rootStore";
 import { setActivityProps, createAttendee } from "../common/util/util";
+import {
+  HubConnection,
+  HubConnectionBuilder,
+  LogLevel,
+} from "@microsoft/signalr";
 
 export default class ActivityStore {
   rootStore: RootStore;
@@ -20,6 +25,51 @@ export default class ActivityStore {
   @observable submitting = false;
   @observable target = "";
   @observable loading = false;
+  @observable.ref hubConnection: HubConnection | null = null;
+
+  @action createHubConnection = (activityId: string) => {
+    this.hubConnection = new HubConnectionBuilder()
+      .withUrl("http://localhost:5000/chat", {
+        accessTokenFactory: () => this.rootStore.commonStore.token!,
+      })
+      .configureLogging(LogLevel.None)
+      .build();
+
+    this.hubConnection
+      .start()
+      .then(() => {
+        this.hubConnection!.invoke("AddToGroup", activityId).catch((e) =>
+          console.log(e)
+        );
+      })
+      .catch((error) => console.log(error));
+
+    this.hubConnection.on("ReceiveComment", (comment) => {
+      runInAction(() => {
+        this.selectedActivity!.comments.push(comment);
+      });
+    });
+
+    this.hubConnection.on("Send", (message) => {
+      toast.info(message);
+    });
+  };
+
+  @action stopHubConnection = () => {
+    this.hubConnection!.invoke("RemoveFromGroup", this.selectedActivity!.id)
+      .then(() => {
+        this.hubConnection!.stop();
+      })
+      .catch((error) => console.log(error));
+  };
+
+  @action addComment = async (values: any) => {
+    values.activityId = this.selectedActivity!.id;
+
+    try {
+      await this.hubConnection!.invoke("SendComment", values);
+    } catch (error) {}
+  };
 
   @computed get activitiesByDate() {
     return this.groupActivitiesByDate(
@@ -115,6 +165,7 @@ export default class ActivityStore {
       let attendees = [];
       attendees.push(attendee);
       activity.attendees = attendees;
+      activity.comments = [];
       activity.isHost = true;
 
       runInAction("Creating activity...", () => {
@@ -198,8 +249,8 @@ export default class ActivityStore {
     } catch (error) {
       runInAction(() => {
         this.loading = false;
-      })
-      toast.error("Problem signing up to activity.")
+      });
+      toast.error("Problem signing up to activity.");
     }
   };
 
@@ -219,10 +270,10 @@ export default class ActivityStore {
           );
           this.loading = false;
         }
-      })
+      });
     } catch (error) {
-      runInAction(() => this.loading = false)
-      toast.error("Problem cancelling attendance.")
+      runInAction(() => (this.loading = false));
+      toast.error("Problem cancelling attendance.");
     }
   };
 }

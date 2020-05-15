@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using Newtonsoft.Json;
+using Reactivities.Application.EntityServices.Comments;
 
 namespace Reactivities.Application.EntityServices.Activities
 {
@@ -21,5 +21,7 @@ namespace Reactivities.Application.EntityServices.Activities
         public string Venue { get; set; }
 
         public ICollection<AttendeeDto> Attendees { get; set; }
+
+        public ICollection<CommentDto> Comments { get; set; }
     }
 }
