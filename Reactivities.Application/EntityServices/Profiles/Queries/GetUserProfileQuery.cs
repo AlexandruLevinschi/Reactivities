@@ -1,9 +1,6 @@
-﻿using System.Linq;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
-using Reactivities.Persistence;
 
 namespace Reactivities.Application.EntityServices.Profiles.Queries
 {
@@ -14,26 +11,16 @@ namespace Reactivities.Application.EntityServices.Profiles.Queries
 
     public class GetUserProfileQueryHandler : IRequestHandler<GetUserProfileQuery, Profile>
     {
-        private readonly ReactivitiesDbContext _context;
+        private readonly IProfileReader _profileReader;
 
-        public GetUserProfileQueryHandler(ReactivitiesDbContext context)
+        public GetUserProfileQueryHandler(IProfileReader profileReader)
         {
-            _context = context;
+            _profileReader = profileReader;
         }
 
         public async Task<Profile> Handle(GetUserProfileQuery request, CancellationToken cancellationToken)
         {
-            var user = await _context.Users.SingleOrDefaultAsync(u => u.UserName == request.Username,
-                cancellationToken);
-
-            return new Profile
-            {
-                DisplayName = user.DisplayName,
-                Username = user.UserName,
-                Image = user.Photos.FirstOrDefault(p => p.IsMain)?.Url,
-                Photos = user.Photos,
-                Biography = user.Biography
-            };
+            return await _profileReader.ReadProfile(request.Username);
         }
     }
 }

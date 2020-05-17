@@ -17,6 +17,7 @@ using Reactivities.Api.Middleware;
 using Reactivities.Api.SignalR;
 using Reactivities.Application.EntityServices.Activities.Commands;
 using Reactivities.Application.EntityServices.Activities.Queries;
+using Reactivities.Application.EntityServices.Profiles;
 using Reactivities.Application.Interfaces;
 using Reactivities.Domain.Entities;
 using Reactivities.Infrastructure.Photos;
@@ -109,6 +110,7 @@ namespace Reactivities.Api
             services.AddScoped<IJwtGenerator, JwtGenerator>();
             services.AddScoped<IUserAccessor, UserAccessor>();
             services.AddScoped<IPhotoAccessor, PhotoAccessor>();
+            services.AddScoped<IProfileReader, ProfileReader>();
             services.Configure<CloudinarySettings>(Configuration.GetSection("Cloudinary"));
         }
 

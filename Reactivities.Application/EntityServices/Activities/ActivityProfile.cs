@@ -14,7 +14,8 @@ namespace Reactivities.Application.EntityServices.Activities
             CreateMap<UserActivity, AttendeeDto>()
                 .ForMember(d => d.Username, o => o.MapFrom(s => s.User.UserName))
                 .ForMember(d => d.DisplayName, o => o.MapFrom(s => s.User.DisplayName))
-                .ForMember(d => d.Image, o => o.MapFrom(s => s.User.Photos.FirstOrDefault(p => p.IsMain).Url));
+                .ForMember(d => d.Image, o => o.MapFrom(s => s.User.Photos.FirstOrDefault(p => p.IsMain).Url))
+                .ForMember(d => d.Following, o => o.MapFrom<FollowingResolver>());
         }
     }
 }
