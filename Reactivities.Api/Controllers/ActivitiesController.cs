@@ -11,9 +11,16 @@ namespace Reactivities.Api.Controllers
     public class ActivitiesController : BaseController
     {
         [HttpGet]
-        public async Task<IActionResult> List()
+        public async Task<IActionResult> List(int? limit, int? offset, bool isGoing, bool isHost, DateTime? startDate)
         {
-            var request = await Mediator.Send(new GetActivitiesQuery());
+            var request = await Mediator.Send(new GetActivitiesQuery
+            {
+                Limit = limit, 
+                Offset = offset, 
+                IsGoing = isGoing, 
+                IsHost = isHost,
+                StartDate = startDate ?? DateTime.Now
+            });
 
             if (request != null) return Ok(request);
 
