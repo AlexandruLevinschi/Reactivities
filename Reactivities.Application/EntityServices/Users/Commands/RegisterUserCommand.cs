@@ -61,7 +61,7 @@ namespace Reactivities.Application.EntityServices.Users.Commands
                 DisplayName = user.DisplayName,
                 Token = _jwtGenerator.CreateToken(user),
                 Username = user.UserName,
-                Image = user.Photos.FirstOrDefault(p => p.IsMain)?.Url
+                Image = user.Photos?.FirstOrDefault(p => p.IsMain)?.Url
             };
 
             throw new Exception("Problem creating user");
