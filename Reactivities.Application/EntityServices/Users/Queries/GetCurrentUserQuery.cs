@@ -34,7 +34,8 @@ namespace Reactivities.Application.EntityServices.Users.Queries
                 DisplayName = user.DisplayName,
                 Username = user.UserName,
                 Token = _jwtGenerator.CreateToken(user),
-                Image = user.Photos.FirstOrDefault(p => p.IsMain)?.Url
+                Image = user.Photos.FirstOrDefault(p => p.IsMain)?.Url,
+                IsAdmin = user.IsAdmin
             };
         }
     }

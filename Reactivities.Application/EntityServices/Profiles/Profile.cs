@@ -21,6 +21,6 @@ namespace Reactivities.Application.EntityServices.Profiles
 
         public int FollowingCount { get; set; }
 
-        public ICollection<Photo> Photos { get; set; }  
+        public ICollection<Photo> Photos { get; set; }
     }
 }

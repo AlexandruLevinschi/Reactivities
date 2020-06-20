@@ -4,6 +4,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using Reactivities.Persistence;
 
 namespace Reactivities.Infrastructure.Security
@@ -34,8 +35,9 @@ namespace Reactivities.Infrastructure.Security
             var activity = _context.Activities.FindAsync(activityId).Result;
 
             var host = activity.UserActivities.FirstOrDefault(x => x.IsHost);
+            var user = _context.Users.FirstOrDefaultAsync(u => u.UserName == username).Result;
 
-            if (host?.User.UserName == username) context.Succeed(requirement);
+            if (host?.User.UserName == username || user.IsAdmin) context.Succeed(requirement);
 
             return Task.CompletedTask;
         }

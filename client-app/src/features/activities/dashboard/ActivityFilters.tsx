@@ -3,6 +3,7 @@ import { Menu, Header } from "semantic-ui-react";
 import { Calendar } from "react-widgets";
 import { RootStoreContext } from "../../../app/stores/rootStore";
 import { observer } from "mobx-react-lite";
+import "./activity-dashboard.css";
 
 const ActivityFilters = () => {
   const rootStore = useContext(RootStoreContext);
@@ -10,7 +11,7 @@ const ActivityFilters = () => {
 
   return (
     <Fragment>
-      <Menu vertical size={"large"} style={{ width: "100%", marginTop: 51 }}>
+      <Menu className="filter-container" vertical size={"large"} style={{ width: "100%" }}>
         <Header icon={"filter"} attached color={"teal"} content={"Filters"} />
         <Menu.Item
           active={predicate.size === 0}
