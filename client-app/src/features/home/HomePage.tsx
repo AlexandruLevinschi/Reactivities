@@ -21,7 +21,7 @@ const HomePage = () => {
             alt="logo"
             style={{ marginBottom: 12 }}
           />
-          Reactivities
+          Youth Activities
         </Header>
         {isLoggedIn && user && token ? (
           <Fragment>
@@ -32,7 +32,7 @@ const HomePage = () => {
           </Fragment>
         ) : (
           <Fragment>
-            <Header as="h2" inverted content={`Welcome to Reactivities`} />
+            <Header as="h2" inverted content={`Welcome to Youth Activities`} />
             <Button onClick={() => openModal(<LoginForm />)} size="huge" inverted>
               Login
             </Button>

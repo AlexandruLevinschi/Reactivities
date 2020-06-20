@@ -10,6 +10,8 @@ namespace Reactivities.Domain.Entities
 
         public string Biography { get; set; }
 
+        public bool IsAdmin { get; set; }
+
         public virtual ICollection<UserActivity> UserActivities { get; set; }
 
         public virtual ICollection<Photo> Photos { get; set; }

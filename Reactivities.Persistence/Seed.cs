@@ -20,7 +20,8 @@ namespace Reactivities.Persistence
                         Id = "a",
                         DisplayName = "Bob",
                         UserName = "bob",
-                        Email = "bob@test.com"
+                        Email = "bob@test.com",
+                        IsAdmin = true
                     },
                     new User
                     {

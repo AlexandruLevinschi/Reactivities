@@ -17,17 +17,17 @@ const NavBar: React.FC = () => {
             alt="logo"
             style={{ marginRight: "10px" }}
           />
-          Reactivities
+          Youth Activities
         </Menu.Item>
         <Menu.Item name="Activities" as={NavLink} exact to="/activities" />
-        <Menu.Item>
+        {/* <Menu.Item>
           <Button
             as={NavLink}
             to="/activities/create"
             positive
             content="Create Activity"
           />
-        </Menu.Item>
+        </Menu.Item> */}
         {user && (
           <Menu.Item position="right">
             <Image
@@ -43,6 +43,7 @@ const NavBar: React.FC = () => {
                   text="My profile"
                   icon="user"
                 />
+                <Dropdown.Item as={Link} to="/activities/create" text="Create Activity" icon="plus" />
                 <Dropdown.Item onClick={logout} text="Logout" icon="power" />
               </Dropdown.Menu>
             </Dropdown>

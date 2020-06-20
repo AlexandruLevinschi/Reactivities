@@ -1,5 +1,4 @@
 import { observable, action, computed, runInAction, reaction, toJS } from "mobx";
-import { SyntheticEvent } from "react";
 import { IActivity } from "../models/activity";
 import agent from "../api/agent";
 import { history } from "../..";
@@ -252,11 +251,9 @@ export default class ActivityStore {
   };
 
   @action deleteActivity = async (
-    event: SyntheticEvent<HTMLButtonElement>,
     id: string
   ) => {
     this.submitting = true;
-    this.target = event.currentTarget.name;
 
     try {
       await agent.Activities.delete(id);
@@ -264,13 +261,12 @@ export default class ActivityStore {
       runInAction("Deleting activity...", () => {
         this.activityRegistry.delete(id);
         this.submitting = false;
-        this.target = "";
+        history.push(`/activities`);
       });
     } catch (error) {
       runInAction("Delete activity error", () => {
         console.log(error);
         this.submitting = false;
-        this.target = "";
       });
     }
   };

@@ -13,7 +13,7 @@ const ActivityDetailedInfo: React.FC<{ activity: IActivity }> = ({
           <Grid.Column width={1}>
             <Icon size="large" color="teal" name="info" />
           </Grid.Column>
-          <Grid.Column width={15}>
+          <Grid.Column width={14}>
             <p>{activity.description}</p>
           </Grid.Column>
         </Grid>
@@ -23,7 +23,7 @@ const ActivityDetailedInfo: React.FC<{ activity: IActivity }> = ({
           <Grid.Column width={1}>
             <Icon name="calendar" size="large" color="teal" />
           </Grid.Column>
-          <Grid.Column width={15}>
+          <Grid.Column width={14}>
             <span>{format(activity.date, "eeee do MMMM")} at {format(activity.date, "h:mm")}</span>
           </Grid.Column>
         </Grid>
